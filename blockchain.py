@@ -8,13 +8,12 @@ def get_last_transaction_amount():
     return blockchain[-1]
 
 
-tx_amount = float(input("Please enter a transaction amount: "))
-add_value(tx_amount)
+def get_tx_input():
+    tx_amount = float(input("Please enter a transaction amount: "))
+    return tx_amount
 
-tx_amount = float(input("Please enter a transaction amount: "))
-add_value(tx_amount, get_last_transaction_amount())
-
-tx_amount = float(input("Please enter a transaction amount: "))
-add_value(tx_amount, get_last_transaction_amount())
+add_value(get_tx_input())
+add_value(get_tx_input(), get_last_transaction_amount())
+add_value(get_tx_input(), get_last_transaction_amount())
 
 print(blockchain)
