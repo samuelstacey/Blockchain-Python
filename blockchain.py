@@ -4,7 +4,7 @@ blockchain = []
 # function to add transaction to blockchain
 
 
-def add_value(transaction_amount, last_transaction=[0]):
+def add_value(transaction_amount, last_transaction):
     """ Add a transaction to a blockchain
     Arguments:
         :transaction_amount: The amount of the transaction to be added
