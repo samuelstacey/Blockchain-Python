@@ -37,11 +37,25 @@ def print_blockchain():
         print("The blockchain is empty")
 
 
+#Validates the blockchain to ensure that it hasn't been manipulated
+def chain_verification():
+    block_index = 0
+    is_valid = True
+    for block in blockchain:
+        if block_index == 0:
+            block_index += 1
+            continue
+        elif (block[0] != blockchain[block_index - 1]):
+            is_valid = False
+    return is_valid
+    
+
 #while loop for getting inputs
 while True:
     print('Please choose an option')
     print('1: Add transaction')
     print('2: Ouput current transactions')
+    print('h: Manipulate the chain')
     print('q: Quit')
 
     selected_option = get_user_input()
@@ -53,5 +67,11 @@ while True:
         print_blockchain() 
     elif (selected_option == 'q'):
         break
+    elif (selected_option == 'h'):
+        if len(blockchain) >= 1:
+            blockchain[0] = [2]
     else:
         print('Please enter a valid option from the list')
+    if not chain_verification():
+        print("Chain not secure!")
+        break
