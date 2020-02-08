@@ -49,9 +49,10 @@ def chain_verification():
             is_valid = False
     return is_valid
     
+waiting_for_input = True
 
 #while loop for getting inputs
-while True:
+while waiting_for_input:
     print('Please choose an option')
     print('1: Add transaction')
     print('2: Ouput current transactions')
@@ -66,7 +67,7 @@ while True:
     elif (selected_option == '2'):
         print_blockchain() 
     elif (selected_option == 'q'):
-        break
+        waiting_for_input = False
     elif (selected_option == 'h'):
         if len(blockchain) >= 1:
             blockchain[0] = [2]
@@ -74,4 +75,4 @@ while True:
         print('Please enter a valid option from the list')
     if not chain_verification():
         print("Chain not secure!")
-        break
+        waiting_for_input = False
