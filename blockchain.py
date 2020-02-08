@@ -16,7 +16,10 @@ def add_value(transaction_amount, last_transaction=[0]):
 # return last transaction amount
 def get_last_transaction_amount():
     """Returns the last value of the current blockchain without popping"""
-    return blockchain[-1]
+    if len(blockchain) > 0:
+        return blockchain[-1]
+    else:
+        return 0
 
 
 # gets user input for the transaction amount
@@ -27,11 +30,12 @@ def get_user_input():
 
 # output the blockchain list to console
 def print_blockchain():
-    for block in blockchain:
-            print(block)
+    if len(blockchain) > 0:
+        for block in blockchain:
+                print(block)
+    else:
+        print("The blockchain is empty")
 
-
-add_value(get_user_input())
 
 #while loop for getting inputs
 while True:
