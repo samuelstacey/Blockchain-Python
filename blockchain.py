@@ -29,7 +29,6 @@ add_value(get_tx_input())
 
 #while loop for getting inputs
 while True:
-    get_tx_input()
     add_value(get_tx_input(), get_last_transaction_amount())
 
     # output the blockchain list to console
