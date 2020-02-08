@@ -25,13 +25,20 @@ def get_user_input():
     return userin
 
 
+# output the blockchain list to console
+def print_blockchain():
+    for block in blockchain:
+            print(block)
+
+
 add_value(get_user_input())
 
 #while loop for getting inputs
 while True:
     print('Please choose an option')
-    print('1. Add transaction')
-    print('2. Ouput current transactions')
+    print('1: Add transaction')
+    print('2: Ouput current transactions')
+    print('q: Quit')
 
     selected_option = get_user_input()
 
@@ -39,11 +46,8 @@ while True:
         print("Please enter transaction value")
         add_value(float(get_user_input()), get_last_transaction_amount())
     elif (selected_option == '2'):
-        # output the blockchain list to console
-        for block in blockchain:
-            print(block)
+        print_blockchain() 
+    elif (selected_option == 'q'):
+        break
     else:
         print('Please enter a valid option from the list')
-    
-
-
