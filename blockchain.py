@@ -52,7 +52,7 @@ def print_blockchain():
 
 def mine_block():
     last_block = blockchain[-1]
-    hashed_block = '-'.join([str(last_block[key]) for key in last_block])
+    hashed_block = hash_block(last_block)
 
     print(hashed_block)
     block = {
@@ -63,17 +63,18 @@ def mine_block():
     blockchain.append(block)
 
 
+def hash_block(block):
+    return '-'.join([str(block[key]) for key in block])
+
+
 #Validates the blockchain to ensure that it hasn't been manipulated
 def chain_verification():
-    block_index = 0
-    is_valid = True
-    for block_index in range(len(blockchain)):
-        if block_index == 0:
+    for (index, block) in enumerate(blockchain):
+        if index == 0:
             continue
-        elif (blockchain[block_index][0] != blockchain[block_index - 1]):
-            is_valid = False
-            break
-    return is_valid
+        if block['previous_hash'] != hash_block(blockchain[index-1]):
+            return False
+    return True
     
 waiting_for_input = True
 
@@ -104,9 +105,13 @@ while waiting_for_input:
         waiting_for_input = False
     elif (selected_option == 'h'):
         if len(blockchain) >= 1:
-            blockchain[0] = [2]
+            blockchain[0] = {
+                'previous_hash': '',
+                'index': 0, 
+                'transactions': [{'sender': 'Mark', 'recipient': 'Sam', 'amount': 100.0}]
+            }
     else:
         print('Please enter a valid option from the list')
-    #if not chain_verification():
-        #print("Chain not secure!")
-        #waiting_for_input = False
+    if not chain_verification():
+        print("Chain not secure!")
+        waiting_for_input = False
