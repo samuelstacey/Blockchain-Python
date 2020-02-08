@@ -4,13 +4,11 @@ genesis_block = {
     'index': 0, 
     'transactions': []
 }
-blockchain = []
+blockchain = [genesis_block]
 open_transactions = []
 owner = 'Sam'
 
 # function to add transaction to blockchain
-
-
 def add_transaction(recipient, sender=owner, amount=1.0):
     """ Add a transaction to a blockchain
     Arguments:
@@ -54,8 +52,14 @@ def print_blockchain():
 
 def mine_block():
     last_block = blockchain[-1]
+    hashed_block = ''
+    for key in last_block:
+        value = last_block[key]
+        hashed_block = hashed_block + str(value)
+
+    print(hashed_block)
     block = {
-        'previous_hash': 'XYZ', '
+        'previous_hash': hashed_block, 
         'index': len(blockchain), 
         'transactions': open_transactions
     }
@@ -81,6 +85,7 @@ while waiting_for_input:
     print('Please choose an option')
     print('1: Add transaction')
     print('2: Ouput current transactions')
+    print('3: Mine a new block')
     print('h: Manipulate the chain')
     print('q: Quit')
 
@@ -91,11 +96,13 @@ while waiting_for_input:
     if (selected_option == '1'):
         tx_data = get_transaction_input()
         recipient, amount =  tx_data
-        print("Please enter transaction value")
         add_transaction(recipient, amount=amount)
         print(open_transactions)
     elif (selected_option == '2'):
         print_blockchain() 
+        open_transactions = []
+    elif (selected_option == '3'):
+        mine_block()
     elif (selected_option == 'q'):
         waiting_for_input = False
     elif (selected_option == 'h'):
@@ -103,6 +110,6 @@ while waiting_for_input:
             blockchain[0] = [2]
     else:
         print('Please enter a valid option from the list')
-    if not chain_verification():
-        print("Chain not secure!")
-        waiting_for_input = False
+    #if not chain_verification():
+        #print("Chain not secure!")
+        #waiting_for_input = False
