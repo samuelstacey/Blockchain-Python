@@ -1,4 +1,7 @@
 # Blockchain-Python
 A simple blockchain project in Python.
 
-First git project
+Basic foundation of a blockchain with the following features
+-POW
+-Chain verification
+-etc
