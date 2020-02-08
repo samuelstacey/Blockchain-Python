@@ -41,12 +41,12 @@ def print_blockchain():
 def chain_verification():
     block_index = 0
     is_valid = True
-    for block in blockchain:
+    for block_index in range(len(blockchain)):
         if block_index == 0:
-            block_index += 1
             continue
-        elif (block[0] != blockchain[block_index - 1]):
+        elif (blockchain[block_index][0] != blockchain[block_index - 1]):
             is_valid = False
+            break
     return is_valid
     
 waiting_for_input = True
@@ -59,8 +59,10 @@ while waiting_for_input:
     print('h: Manipulate the chain')
     print('q: Quit')
 
+    #variable to hold user input
     selected_option = get_user_input()
 
+    #if statement to run based on user input
     if (selected_option == '1'):
         print("Please enter transaction value")
         add_value(float(get_user_input()), get_last_transaction_amount())
