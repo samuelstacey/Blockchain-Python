@@ -1,16 +1,20 @@
 # initialising blockchain list
 blockchain = []
+open_transactions = []
+owner = 'Sam'
 
 # function to add transaction to blockchain
 
 
-def add_value(transaction_amount, last_transaction):
+def add_transaction(sender, recipient, amount=1.0):
     """ Add a transaction to a blockchain
     Arguments:
-        :transaction_amount: The amount of the transaction to be added
-        :last_transaction: The value of the previous transaction
+        :sender: The sender of the coins
+        :receiver: The receiver of the coins
+        :amount: The value of the transaction, default is 1
     """
-    blockchain.append([last_transaction, transaction_amount])
+    transaction = {'sender': sender, 'recipient': recipient, 'amount':amount}
+    open_transactions.append()
 
 
 # return last transaction amount
@@ -22,10 +26,16 @@ def get_last_transaction_amount():
         return 0
 
 
-# gets user input for the transaction amount
+# gets user input
 def get_user_input():
     userin = input("Input: ")
     return userin
+
+
+def get_transaction_input():
+    tx_recipient = input('Enter recipient address: ')
+    tx_amount = float(input('Enter transaction amount: '))
+    return tx_recipient, tx_amount
 
 
 # output the blockchain list to console
@@ -35,6 +45,10 @@ def print_blockchain():
                 print(block)
     else:
         print("The blockchain is empty")
+
+
+def mine_block():
+    pass
 
 
 #Validates the blockchain to ensure that it hasn't been manipulated
@@ -64,8 +78,9 @@ while waiting_for_input:
 
     #if statement to run based on user input
     if (selected_option == '1'):
+        tx_amount = get_transaction_input
         print("Please enter transaction value")
-        add_value(float(get_user_input()), get_last_transaction_amount())
+        add_transaction(tx_amount, get_last_transaction_amount())
     elif (selected_option == '2'):
         print_blockchain() 
     elif (selected_option == 'q'):
