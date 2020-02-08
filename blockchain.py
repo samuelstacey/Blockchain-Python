@@ -100,9 +100,9 @@ while waiting_for_input:
         print(open_transactions)
     elif (selected_option == '2'):
         print_blockchain() 
-        open_transactions = []
     elif (selected_option == '3'):
         mine_block()
+        open_transactions = []
     elif (selected_option == 'q'):
         waiting_for_input = False
     elif (selected_option == 'h'):
