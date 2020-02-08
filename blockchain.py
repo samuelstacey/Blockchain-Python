@@ -20,17 +20,27 @@ def get_last_transaction_amount():
 
 
 # gets user input for the transaction amount
-def get_tx_input():
-    tx_amount = float(input("Please enter a transaction amount: "))
-    return tx_amount
+def get_user_input():
+    userin = input("Input: ")
+    return userin
 
 
-add_value(get_tx_input())
+add_value(get_user_input())
 
 #while loop for getting inputs
 while True:
-    add_value(get_tx_input(), get_last_transaction_amount())
+    print('Please choose an option')
+    print('1. Add transaction')
+    print('2. Ouput current transactions')
 
-    # output the blockchain list to console
-    for block in blockchain:
-        print(block)
+    selected_option = get_user_input()
+
+    if (selected_option == '1'):
+        print("Please enter transaction value")
+        add_value(float(get_user_input()), get_last_transaction_amount())
+    elif (selected_option == '2'):
+        # output the blockchain list to console
+        for block in blockchain:
+            print(block)
+
+
