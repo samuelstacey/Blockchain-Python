@@ -64,6 +64,23 @@ def mine_block():
         'transactions': open_transactions
     }
     blockchain.append(block)
+    return True
+
+
+def get_balance(participant):
+    tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain] 
+    amount_sent = 0
+    for tx in tx_sender:
+        if len(tx) > 0:
+            amount_sent += tx[0]
+    tx_receiver = [[tx['amount'] for tx in block['transactions'] if tx['recipient'] == participant] for block in blockchain]
+    amount_received = 0
+    for tx in tx_receiver:
+        if len(tx) > 0:
+            amount_received += tx[0]
+    
+    return amount_received - amount_sent
+
 
 
 def hash_block(block):
@@ -104,8 +121,8 @@ while waiting_for_input:
     elif (selected_option == '2'):
         print_blockchain() 
     elif (selected_option == '3'):
-        mine_block()
-        open_transactions = []
+        if mine_block():
+            open_transactions = []
     elif (selected_option == '4'):
         print(participants)
     elif (selected_option == 'q'):
@@ -122,3 +139,4 @@ while waiting_for_input:
     if not chain_verification():
         print("Chain not secure!")
         waiting_for_input = False
+    print(get_balance('Sam'))
