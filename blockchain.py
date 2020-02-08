@@ -42,5 +42,8 @@ while True:
         # output the blockchain list to console
         for block in blockchain:
             print(block)
+    else:
+        print('Please enter a valid option from the list')
+    
 
 
