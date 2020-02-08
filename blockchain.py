@@ -7,6 +7,7 @@ genesis_block = {
 blockchain = [genesis_block]
 open_transactions = []
 owner = 'Sam'
+participants = {'Sam'}
 
 # function to add transaction to blockchain
 def add_transaction(recipient, sender=owner, amount=1.0):
@@ -18,6 +19,8 @@ def add_transaction(recipient, sender=owner, amount=1.0):
     """
     transaction = {'sender': sender, 'recipient': recipient, 'amount':amount}
     open_transactions.append(transaction)
+    participants.add(sender)
+    participants.add(recipient)
 
 
 # return last transaction amount
@@ -76,6 +79,7 @@ def chain_verification():
             return False
     return True
     
+
 waiting_for_input = True
 
 #while loop for getting inputs
@@ -84,6 +88,7 @@ while waiting_for_input:
     print('1: Add transaction')
     print('2: Ouput current transactions')
     print('3: Mine a new block')
+    print('4: Output participants')
     print('h: Manipulate the chain')
     print('q: Quit')
 
@@ -101,6 +106,8 @@ while waiting_for_input:
     elif (selected_option == '3'):
         mine_block()
         open_transactions = []
+    elif (selected_option == '4'):
+        print(participants)
     elif (selected_option == 'q'):
         waiting_for_input = False
     elif (selected_option == 'h'):
