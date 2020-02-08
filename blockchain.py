@@ -6,7 +6,7 @@ owner = 'Sam'
 # function to add transaction to blockchain
 
 
-def add_transaction(sender, recipient, amount=1.0):
+def add_transaction(recipient, sender=owner, amount=1.0):
     """ Add a transaction to a blockchain
     Arguments:
         :sender: The sender of the coins
@@ -14,7 +14,7 @@ def add_transaction(sender, recipient, amount=1.0):
         :amount: The value of the transaction, default is 1
     """
     transaction = {'sender': sender, 'recipient': recipient, 'amount':amount}
-    open_transactions.append()
+    open_transactions.append(transaction)
 
 
 # return last transaction amount
@@ -78,9 +78,11 @@ while waiting_for_input:
 
     #if statement to run based on user input
     if (selected_option == '1'):
-        tx_amount = get_transaction_input
+        tx_data = get_transaction_input()
+        recipient, amount =  tx_data
         print("Please enter transaction value")
-        add_transaction(tx_amount, get_last_transaction_amount())
+        add_transaction(recipient, amount=amount)
+        print(open_transactions)
     elif (selected_option == '2'):
         print_blockchain() 
     elif (selected_option == 'q'):
