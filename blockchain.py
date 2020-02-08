@@ -10,9 +10,8 @@ open_transactions = []
 owner = 'Sam'
 participants = {'Sam'}
 
+
 # function to add transaction to blockchain
-
-
 def add_transaction(recipient, sender=owner, amount=1.0):
     """ Add a transaction to a blockchain
     Arguments:
@@ -29,7 +28,7 @@ def add_transaction(recipient, sender=owner, amount=1.0):
     return False
 
 
-
+# function to verify whether transaction can be completed
 def verify_transaction(transaction):
     sender_balance = get_balance(transaction['sender'])
     return sender_balance >= transaction['amount']
@@ -50,6 +49,7 @@ def get_user_input():
     return userin
 
 
+# gets transaction details from user input
 def get_transaction_input():
     tx_recipient = input('Enter recipient address: ')
     tx_amount = float(input('Enter transaction amount: '))
@@ -65,6 +65,7 @@ def print_blockchain():
         print("The blockchain is empty")
 
 
+# mine block and produce mining rewars as well as verifying transactions
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
@@ -83,9 +84,12 @@ def mine_block():
     return True
 
 
+# get the balance of a user based on transaction history
 def get_balance(participant):
-    tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain]
-    open_tx_sender = [tx['amount'] for tx in open_transactions if tx['sender'] == participant]
+    tx_sender = [[tx['amount'] for tx in block['transactions']
+                  if tx['sender'] == participant] for block in blockchain]
+    open_tx_sender = [tx['amount']
+                      for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
     amount_sent = 0
     for tx in tx_sender:
@@ -100,6 +104,7 @@ def get_balance(participant):
     return amount_received - amount_sent
 
 
+# return unique hash for a block
 def hash_block(block):
     return '-'.join([str(block[key]) for key in block])
 
