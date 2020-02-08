@@ -26,8 +26,12 @@ def get_tx_input():
 
 
 add_value(get_tx_input())
-add_value(get_tx_input(), get_last_transaction_amount())
-add_value(get_tx_input(), get_last_transaction_amount())
 
-# print the blockchain list
-print(blockchain)
+#while loop for getting inputs
+while True:
+    get_tx_input()
+    add_value(get_tx_input(), get_last_transaction_amount())
+
+    # output the blockchain list to console
+    for block in blockchain:
+        print(block)
