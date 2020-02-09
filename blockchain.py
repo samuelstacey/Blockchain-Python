@@ -83,6 +83,7 @@ def mine_block():
         'recipient': owner,
         'amount': MINING_REWARD
     }
+    #copied so that the mining transaction only completes if the block is mined successfully
     copied_transactions = open_transactions[:]
     copied_transactions.append(reward_transaction)
     block = {
@@ -131,6 +132,16 @@ def chain_verification():
     return True
 
 
+def verify_transactions():
+    is_valid = True
+    for tx in open_transactions:
+        if verify_transaction(tx):
+            is_valid = True
+        else:
+            is_valid = False
+    return is_valid
+
+
 waiting_for_input = True
 
 # while loop for getting inputs
@@ -140,6 +151,7 @@ while waiting_for_input:
     print('2: Ouput current transactions')
     print('3: Mine a new block')
     print('4: Output participants')
+    print('5: Check transaction validity')
     print('h: Manipulate the chain')
     print('q: Quit')
 
@@ -162,6 +174,11 @@ while waiting_for_input:
             open_transactions = []
     elif (selected_option == '4'):
         print(participants)
+    elif (selected_option == '5'):
+        if verify_transactions:
+            print('All transactions are valid')
+        else:
+            print('There are invalid transactions')
     elif (selected_option == 'q'):
         waiting_for_input = False
     elif (selected_option == 'h'):
