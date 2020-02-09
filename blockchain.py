@@ -1,24 +1,30 @@
-# initialising blockchain list
+# reward for mining a single block given to the miner
 MINING_REWARD = 10
+#first block of the chain stored as a dictionary
 genesis_block = {
     'previous_hash': '',
     'index': 0,
     'transactions': []
 }
+#definition of the blockchain list of blocks
 blockchain = [genesis_block]
+#list of open transactions
 open_transactions = []
 owner = 'Sam'
+#participants in transactions on the blockchain
 participants = {'Sam'}
 
 
 # function to add transaction to blockchain
 def add_transaction(recipient, sender=owner, amount=1.0):
     """ Add a transaction to a blockchain
+    Return: whether transaction was successful
     Arguments:
         :sender: The sender of the coins
         :receiver: The receiver of the coins
         :amount: The value of the transaction, default is 1
     """
+    #transaction stored as a dictionary
     transaction = {'sender': sender, 'recipient': recipient, 'amount': amount}
     if verify_transaction(transaction):
         open_transactions.append(transaction)
@@ -28,13 +34,14 @@ def add_transaction(recipient, sender=owner, amount=1.0):
     return False
 
 
-# function to verify whether transaction can be completed
+# function to verify whether transaction can be completed based on the sender's balance
 def verify_transaction(transaction):
     sender_balance = get_balance(transaction['sender'])
     return sender_balance >= transaction['amount']
 
 
-# return last transaction amount
+# return last transaction amount 
+#NOT WORKING FOR CURRENT IMPLEMENTATION
 def get_last_transaction_amount():
     """Returns the last value of the current blockchain without popping"""
     if len(blockchain) > 0:
@@ -53,6 +60,7 @@ def get_user_input():
 def get_transaction_input():
     tx_recipient = input('Enter recipient address: ')
     tx_amount = float(input('Enter transaction amount: '))
+    #returns a tuple containing transaction details
     return tx_recipient, tx_amount
 
 
@@ -69,6 +77,7 @@ def print_blockchain():
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
+    #transaction for mining the block added when block is mined
     reward_transaction = {
         'sender': 'MINING',
         'recipient': owner,
@@ -80,6 +89,7 @@ def mine_block():
         'index': len(blockchain),
         'transactions': open_transactions
     }
+    #block added to chain therefore mined
     blockchain.append(block)
     return True
 
@@ -111,6 +121,7 @@ def hash_block(block):
 
 # Validates the blockchain to ensure that it hasn't been manipulated
 def chain_verification():
+    #enumerate() returns a tuple with indexes and data from blockchain list
     for (index, block) in enumerate(blockchain):
         if index == 0:
             continue
