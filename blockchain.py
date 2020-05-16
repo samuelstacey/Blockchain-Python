@@ -7,7 +7,7 @@ genesis_block = {
     'index': 0,
     'transactions': []
 }
-#definition of the blockchain list of blocks
+#definition of the blockchain list
 blockchain = [genesis_block]
 #list of open transactions
 open_transactions = []
