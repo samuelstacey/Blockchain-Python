@@ -53,6 +53,30 @@ def get_last_transaction_amount():
         return 0
 
 
+# return unique hash for a block
+def hash_block(block):
+    #converts block to json, encodes to utf8, then hashes with sha256
+    #We then convert the sha256 hash from hex to normal string
+    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
+
+
+#Check whether a hash is valid, nonce is number only used once
+def valid_POW(transactions, last_hash, nonce):
+    guess = (str(transactions) + str(last_hash) + str(nonce)).encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    print(guess_hash)
+    return guess_hash[0:2] == '00'
+
+
+def proof_of_work():
+    last_block = blockchain[-1]
+    last_hash = hash_block(last_block)
+    proof = 0
+    while valid_POW(open_transactions, last_hash, proof):
+        proof +=1
+    return proof
+
+
 # gets user input
 def get_user_input():
     userin = input("Input: ")
@@ -113,13 +137,6 @@ def get_balance(participant):
     #UNDERSTAND THIS
     amount_received = functools.reduce(lambda tx_sum, tx_amt: tx_sum + sum(tx_amt) if len(tx_amt) > 0 else tx_sum + 0, tx_receiver, 0)
     return amount_received - amount_sent
-
-
-# return unique hash for a block
-def hash_block(block):
-    #converts block to json, encodes to utf8, then hashes with sha256
-    #We then convert the sha256 hash from hex to normal string
-    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
 
 
 # Validates the blockchain to ensure that it hasn't been manipulated
