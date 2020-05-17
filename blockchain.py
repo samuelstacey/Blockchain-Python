@@ -1,4 +1,6 @@
-import functools
+import functools 
+import hashlib
+import json
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
 #first block of the chain stored as a dictionary
@@ -9,7 +11,7 @@ genesis_block = {
 }
 #definition of the blockchain list of blocks
 blockchain = [genesis_block]
-#list of open transactions
+#list of open transactions  
 open_transactions = []
 owner = 'Sam'
 #participants in transactions on the blockchain
@@ -115,7 +117,9 @@ def get_balance(participant):
 
 # return unique hash for a block
 def hash_block(block):
-    return '-'.join([str(block[key]) for key in block])
+    #converts block to json, encodes to utf8, then hashes with sha256
+    #We then convert the sha256 hash from hex to normal string
+    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
 
 
 # Validates the blockchain to ensure that it hasn't been manipulated
