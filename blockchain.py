@@ -1,7 +1,7 @@
 import functools 
-import hashlib
-import json
+from hash_util import hash_block, hash_string_256 #My library for hashing 
 import collections
+
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
 #first block of the chain stored as a dictionary
@@ -56,17 +56,10 @@ def get_last_transaction_amount():
         return 0
 
 
-# return unique hash for a block
-def hash_block(block):
-    #converts block to json, encodes to utf8, then hashes with sha256
-    #We then convert the sha256 hash from hex to normal string
-    return hashlib.sha256(json.dumps(block, sort_keys=True).encode()).hexdigest()
-
-
 #Check whether a hash is valid, nonce is number only used once
 def valid_POW(transactions, last_hash, nonce):
     guess = (str(transactions) + str(last_hash) + str(nonce)).encode()
-    guess_hash = hashlib.sha256(guess).hexdigest()
+    guess_hash = hash_string_256(guess)
     print(guess_hash)
     return guess_hash[0:2] == '00'
 
