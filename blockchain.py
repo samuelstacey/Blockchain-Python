@@ -1,6 +1,7 @@
 import functools 
 import hashlib
 import json
+import collections
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
 #first block of the chain stored as a dictionary
@@ -29,7 +30,8 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         :amount: The value of the transaction, default is 1
     """
     #transaction stored as a dictionary
-    transaction = {'sender': sender, 'recipient': recipient, 'amount': amount}
+    #transaction = {'sender': sender, 'recipient': recipient, 'amount': amount}
+    transaction = collections.OrderedDict([('sender', sender), ('recipient', recipient), ('amount', amount)])
     if verify_transaction(transaction):
         open_transactions.append(transaction)
         participants.add(sender)
@@ -58,7 +60,7 @@ def get_last_transaction_amount():
 def hash_block(block):
     #converts block to json, encodes to utf8, then hashes with sha256
     #We then convert the sha256 hash from hex to normal string
-    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(block, sort_keys=True).encode()).hexdigest()
 
 
 #Check whether a hash is valid, nonce is number only used once
@@ -107,11 +109,12 @@ def mine_block():
     hashed_block = hash_block(last_block)
     proof = proof_of_work()
     #transaction for mining the block added when block is mined
-    reward_transaction = {
-        'sender': 'MINING',
-        'recipient': owner,
-        'amount': MINING_REWARD
-    }
+    # reward_transaction = {
+    #     'sender': 'MINING',
+    #     'recipient': owner,
+    #     'amount': MINING_REWARD
+    # }
+    reward_transaction = collections.OrderedDict([('sender', 'MINING'), ('recipient', owner), ('amount', MINING_REWARD)])
     #copied so that the mining transaction only completes if the block is mined successfully
     copied_transactions = open_transactions[:]
     copied_transactions.append(reward_transaction)
