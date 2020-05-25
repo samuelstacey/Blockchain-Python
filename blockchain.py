@@ -13,9 +13,6 @@ blockchain = []
 #list of open transactions  
 open_transactions = []
 
-#participants in transactions on the blockchain
-participants = {'Sam'}
-
 
 def load_data():
     global blockchain
@@ -100,7 +97,6 @@ def get_last_transaction_amount():
 def valid_POW(transactions, last_hash, nonce):
     guess = (str([tx.to_ordered_dict() for tx in transactions]) + str(last_hash) + str(nonce)).encode()
     guess_hash = hash_string_256(guess)
-    print(guess_hash)
     return guess_hash[0:2] == '00'
 
 
@@ -198,8 +194,8 @@ while waiting_for_input:
     print('1: Add transaction')
     print('2: Ouput current transactions')
     print('3: Mine a new block')
-    print('4: Output participants')
-    print('5: Check transaction validity')
+    print('4: Check transaction validity')
+    print('5: Output blockchain')
     print('q: Quit')
 
     # variable to hold user input
@@ -221,12 +217,12 @@ while waiting_for_input:
             open_transactions = []
             save_data()
     elif (selected_option == '4'):
-        print(participants)
-    elif (selected_option == '5'):
         if verify_transactions:
             print('All transactions are valid')
         else:
             print('There are invalid transactions')
+    elif (selected_option == '5'):
+        print_blockchain()
     elif (selected_option == 'q'):
         waiting_for_input = False
     else:
