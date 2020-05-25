@@ -1,12 +1,13 @@
 import functools 
 from hash_util import hash_block, hash_string_256 #My library for hashing 
 import collections
+import json
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
 #first block of the chain stored as a dictionary
 genesis_block = {
-    'previous_hash': '',
+    'previous_hash': 'GENESIS',
     'index': 0,
     'transactions': [],
     'proof': 69
@@ -25,11 +26,37 @@ def load_data():
             file_content = f.readlines()
             global blockchain
             global open_transactions
-            blockchain = file_content[0]
-            open_transactions = file_content[1]
-
+            blockchain = json.loads(file_content[0][:-1])
+            updated_blockchain = []
+            for block in blockchain:
+                updated_block = {
+                    'previous_hash': block['previous_hash'],
+                    'index': block['index'],
+                    'proof': block['proof'],
+                    'transactions': [collections.OrderedDict(
+                        [('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]   
+                }
+                updated_blockchain.append(updated_block)
+            blockchain = updated_blockchain
+            open_transactions = json.loads(file_content[1])
+            updated_transactions = []
+            for tx in open_transactions:
+                updated_transactions = {
+                    'sender': tx['sender'],
+                    'recipient': tx['recipient'],
+                    'amount': tx['amount'],
+                }
+            open_transactions = updated_transactions
+                
 
 load_data()
+
+
+def save_data():
+    with open('blockchain.txt', mode='w') as f:
+            f.write(json.dumps(blockchain))
+            f.write('\n')
+            f.write(json.dumps(open_transactions))
 
 
 # function to add transaction to blockchain
@@ -52,12 +79,6 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         return True
     return False
 
-
-def save_data():
-    with open('blockchain.txt', mode='w') as f:
-            f.write(str(blockchain))
-            f.write('\n')
-            f.write(str(open_transactions))
 
 # function to verify whether transaction can be completed based on the sender's balance
 def verify_transaction(transaction):
@@ -138,7 +159,6 @@ def mine_block():
     }
     #block added to chain therefore mined
     blockchain.append(block)
-    save_data()
     return True
 
 
@@ -206,6 +226,7 @@ while waiting_for_input:
     elif (selected_option == '3'):
         if mine_block():
             open_transactions = []
+            save_data()
     elif (selected_option == '4'):
         print(participants)
     elif (selected_option == '5'):
