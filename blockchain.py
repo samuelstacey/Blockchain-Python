@@ -5,58 +5,70 @@ import json
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
-#first block of the chain stored as a dictionary
-genesis_block = {
-    'previous_hash': 'GENESIS',
-    'index': 0,
-    'transactions': [],
-    'proof': 69
-}
+
+owner = 'Sam'
 #definition of the blockchain list of blocks
-blockchain = [genesis_block]
+blockchain = []
 #list of open transactions  
 open_transactions = []
-owner = 'Sam'
+
 #participants in transactions on the blockchain
 participants = {'Sam'}
 
 
 def load_data():
-    with open('blockchain.txt', mode='r') as f:
-            file_content = f.readlines()
-            global blockchain
-            global open_transactions
-            blockchain = json.loads(file_content[0][:-1])
-            updated_blockchain = []
-            for block in blockchain:
-                updated_block = {
-                    'previous_hash': block['previous_hash'],
-                    'index': block['index'],
-                    'proof': block['proof'],
-                    'transactions': [collections.OrderedDict(
-                        [('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]   
-                }
-                updated_blockchain.append(updated_block)
-            blockchain = updated_blockchain
-            open_transactions = json.loads(file_content[1])
-            updated_transactions = []
-            for tx in open_transactions:
-                updated_transactions = {
-                    'sender': tx['sender'],
-                    'recipient': tx['recipient'],
-                    'amount': tx['amount'],
-                }
-            open_transactions = updated_transactions
-                
+    global blockchain
+    global open_transactions
+    try:
+        with open('blockchain.txt', mode='r') as f:
+                file_content = f.readlines()
+                blockchain = json.loads(file_content[0][:-1])
+                updated_blockchain = []
+                for block in blockchain:
+                    updated_block = {
+                        'previous_hash': block['previous_hash'],
+                        'index': block['index'],
+                        'proof': block['proof'],
+                        'transactions': [collections.OrderedDict(
+                            [('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]   
+                    }
+                    updated_blockchain.append(updated_block)
+                blockchain = updated_blockchain
+                open_transactions = json.loads(file_content[1])
+                updated_transactions = []
+                for tx in open_transactions:
+                    updated_transactions = {
+                        'sender': tx['sender'],
+                        'recipient': tx['recipient'],
+                        'amount': tx['amount'],
+                    }
+                open_transactions = updated_transactions
+    except FileNotFoundError:
+        print("File not found")
+        #first block of the chain stored as a dictionary
+        genesis_block = {
+            'previous_hash': 'GENESIS',
+            'index': 0,
+            'transactions': [],
+            'proof': 69
+        }
+        #definition of the blockchain list of blocks
+        blockchain = [genesis_block]
+        #list of open transactions  
+        open_transactions = []
+                    
 
 load_data()
 
 
 def save_data():
-    with open('blockchain.txt', mode='w') as f:
-            f.write(json.dumps(blockchain))
-            f.write('\n')
-            f.write(json.dumps(open_transactions))
+    try:
+        with open('blockchain.txt', mode='w') as f:
+                f.write(json.dumps(blockchain))
+                f.write('\n')
+                f.write(json.dumps(open_transactions))
+    except IOError:
+        print("Saving failed.")
 
 
 # function to add transaction to blockchain
