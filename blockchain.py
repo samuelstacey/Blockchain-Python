@@ -2,6 +2,7 @@ import functools
 from hash_util import hash_block, hash_string_256 #My library for hashing 
 import collections
 import json
+from block import Block
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
@@ -25,13 +26,9 @@ def load_data():
                 blockchain = json.loads(file_content[0][:-1])
                 updated_blockchain = []
                 for block in blockchain:
-                    updated_block = {
-                        'previous_hash': block['previous_hash'],
-                        'index': block['index'],
-                        'proof': block['proof'],
-                        'transactions': [collections.OrderedDict(
-                            [('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]   
-                    }
+                    converted_tx = [collections.OrderedDict(
+                            [('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]
+                    updated_block = Block(block['index'], block['previous_hash'], converted_tx, block['proof'], block['timestamp'])
                     updated_blockchain.append(updated_block)
                 blockchain = updated_blockchain
                 open_transactions = json.loads(file_content[1])
@@ -45,13 +42,8 @@ def load_data():
                 open_transactions = updated_transactions
     except FileNotFoundError:
         print("File not found")
-        #first block of the chain stored as a dictionary
-        genesis_block = {
-            'previous_hash': 'GENESIS',
-            'index': 0,
-            'transactions': [],
-            'proof': 69
-        }
+        #first block of the chain stored as an object
+        genesis_block =  Block(0, '', [], 100, 0)
         #definition of the blockchain list of blocks
         blockchain = [genesis_block]
         #list of open transactions  
@@ -163,12 +155,7 @@ def mine_block():
     #copied so that the mining transaction only completes if the block is mined successfully
     copied_transactions = open_transactions[:]
     copied_transactions.append(reward_transaction)
-    block = {
-        'previous_hash': hashed_block,
-        'index': len(blockchain),
-        'transactions': copied_transactions,
-        'proof': proof
-    }
+    block = Block(len(blockchain), hashed_block, copied_transactions, proof)
     #block added to chain therefore mined
     blockchain.append(block)
     return True
@@ -176,14 +163,14 @@ def mine_block():
 
 # get the balance of a user based on transaction history
 def get_balance(participant):
-    tx_sender = [[tx['amount'] for tx in block['transactions']
+    tx_sender = [[tx['amount'] for tx in block.transactions
                   if tx['sender'] == participant] for block in blockchain]
     open_tx_sender = [tx['amount']
                       for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
     #UNDERSTAND THIS
     amount_sent = functools.reduce(lambda tx_sum, tx_amt: tx_sum + sum(tx_amt) if len(tx_amt) > 0 else tx_sum + 0, tx_sender, 0)
-    tx_receiver = [[tx['amount'] for tx in block['transactions']
+    tx_receiver = [[tx['amount'] for tx in block.transactions
                     if tx['recipient'] == participant] for block in blockchain]
     #UNDERSTAND THIS
     amount_received = functools.reduce(lambda tx_sum, tx_amt: tx_sum + sum(tx_amt) if len(tx_amt) > 0 else tx_sum + 0, tx_receiver, 0)
@@ -196,9 +183,9 @@ def chain_verification():
     for (index, block) in enumerate(blockchain):
         if index == 0:
             continue
-        if block['previous_hash'] != hash_block(blockchain[index-1]):
+        if block.previous_hash != hash_block(blockchain[index-1]):
             return False
-        if not valid_POW(block['transactions'][:-1], block['previous_hash'], block['proof']): 
+        if not valid_POW(block.transactions[:-1], block.previous_hash, block.proof): 
             print('Proof of work is invalid')
             return False
     return True
@@ -218,7 +205,6 @@ while waiting_for_input:
     print('3: Mine a new block')
     print('4: Output participants')
     print('5: Check transaction validity')
-    print('h: Manipulate the chain')
     print('q: Quit')
 
     # variable to hold user input
@@ -248,13 +234,6 @@ while waiting_for_input:
             print('There are invalid transactions')
     elif (selected_option == 'q'):
         waiting_for_input = False
-    elif (selected_option == 'h'):
-        if len(blockchain) >= 1:
-            blockchain[0] = {
-                'previous_hash': '',
-                'index': 0,
-                'transactions': [{'sender': 'Mark', 'recipient': 'Sam', 'amount': 100.0}]
-            }
     else:
         print('Please enter a valid option from the list')
     if not chain_verification():
