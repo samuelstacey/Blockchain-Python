@@ -1,4 +1,4 @@
-from hash_util import hash_block, hash_string_256 #My library for hashing 
+from utility.hash_util import hash_block, hash_string_256 #My library for hashing 
 
 class Verification:
     # Validates the blockchain to ensure that it hasn't been manipulated

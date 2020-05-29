@@ -1,9 +1,9 @@
 import functools 
-from hash_util import hash_block #My library for hashing 
+from utility.hash_util import hash_block #My library for hashing 
 import json
 from block import Block
 from transaction import Transaction
-from verification import Verification
+from utility.verification import Verification
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
