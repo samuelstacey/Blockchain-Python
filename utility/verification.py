@@ -2,13 +2,13 @@ from utility.hash_util import hash_block, hash_string_256 #My library for hashin
 
 class Verification:
     # Validates the blockchain to ensure that it hasn't been manipulated
-    @classmethod
+    @classmethod #doesn't need to be instansiated
     def chain_verification(cls, blockchain):
         #enumerate() returns a tuple with indexes and data from blockchain list
         for (index, block) in enumerate(blockchain):
             if index == 0:
                 continue
-            if block.previous_hash != hash_block(blockchain[index-1]):
+            if block.previous_hash != hash_block(blockchain[index-1]): #check hashes
                 return False
             if not cls.valid_POW(block.transactions[:-1], block.previous_hash, block.proof): 
                 print('Proof of work is invalid')

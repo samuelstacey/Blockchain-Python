@@ -1,6 +1,7 @@
 from time import time
 from utility.printable import Printable
 
+#block in the chain as an object
 class Block(Printable):
     def __init__(self, index, previous_hash, transactions, proof, timestamp = time()):
         self.index = index 
