@@ -4,6 +4,7 @@ import json #to serialise for storage
 from block import Block 
 from transaction import Transaction
 from utility.verification import Verification #verification helper class
+from wallet import Wallet
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
@@ -34,14 +35,14 @@ class Blockchain:
                     blockchain = json.loads(file_content[0][:-1])
                     updated_blockchain = []
                     for block in blockchain: #Loop through the string to put in data structure
-                        converted_tx = [Transaction(tx['sender'], tx['recipient'], tx['amount']) for tx in block['transactions']]
+                        converted_tx = [Transaction(tx['sender'], tx['recipient'], tx['signature'], tx['amount']) for tx in block['transactions']]
                         updated_block = Block(block['index'], block['previous_hash'], converted_tx, block['proof'], block['timestamp'])
                         updated_blockchain.append(updated_block)
                     self.__chain = updated_blockchain #set chain to dictionary above
                     open_transactions = json.loads(file_content[1])
                     updated_transactions = [] #load transactions similarly
                     for tx in open_transactions:
-                        updated_transaction = Transaction(tx['sender'], tx['recipient'], tx['amount'])
+                        updated_transaction = Transaction(tx['sender'], tx['recipient'], tx['signature'], tx['amount'])
                         updated_transactions.append(updated_transaction)
                     self.__open_transactions = updated_transactions
         except (FileNotFoundError, IndexError):
@@ -94,7 +95,7 @@ class Blockchain:
             return 0
 
     # function to add transaction to blockchain
-    def add_transaction(self, recipient, sender, amount=1.0):
+    def add_transaction(self, recipient, sender, signature, amount=1.0):
         """ Add a transaction to a blockchain
         Return: whether transaction was successful
         Arguments:
@@ -105,7 +106,7 @@ class Blockchain:
         if self.hosting_node == None:
             return False
         #transaction stored as a object
-        transaction = Transaction(sender, recipient, amount)
+        transaction = Transaction(sender, recipient, signature, amount)
         #verify transaction can be made before adding to open_transactions
         if Verification.verify_transaction(transaction, self.get_balance):
             self.__open_transactions.append(transaction)
@@ -122,11 +123,15 @@ class Blockchain:
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
         #transaction for mining the block added when block is mined
-        reward_transaction = Transaction('MINING', self.hosting_node, MINING_REWARD)
+        reward_transaction = Transaction('MINING', self.hosting_node, '', MINING_REWARD)
         #copied so that the mining transaction only completes if the block is mined successfully
-        copied_transactions = self.__open_transactions[:]
+        copied_transactions = self.__open_transactions[:] #verify all but the mining transaction
+        for tx in copied_transactions:
+            if not Wallet.verify_transaction(tx):
+                return False
         copied_transactions.append(reward_transaction) #reward tx for the block
         block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
+        
         #block added to chain therefore mined
         self.__chain.append(block) #add block to the chain
         self.__open_transactions = [] #clear open transactions

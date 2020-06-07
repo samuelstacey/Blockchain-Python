@@ -1,4 +1,5 @@
 from utility.hash_util import hash_block, hash_string_256 #My library for hashing 
+from wallet import Wallet
 
 class Verification:
     # Validates the blockchain to ensure that it hasn't been manipulated
@@ -18,9 +19,13 @@ class Verification:
 
     # function to verify whether transaction can be completed based on the sender's balance
     @staticmethod
-    def verify_transaction(transaction, get_balance):
-        sender_balance = get_balance()
-        return sender_balance >= transaction.amount
+    def verify_transaction(transaction, get_balance, check_funds = True):
+        if check_funds == True :
+            sender_balance = get_balance()
+            return sender_balance >= transaction.amount and Wallet.verify_transaction(transaction)
+        else: 
+            return Wallet.verify_transaction(transaction)
+        
 
 
     #Check whether a hash is valid, nonce is number only used once
@@ -34,4 +39,4 @@ class Verification:
     @classmethod
     def verify_transactions(cls, open_transactions, get_balance):
         #Verifies all open transactions
-        return all([cls.verify_transaction(tx, get_balance()) for tx in open_transactions])
+        return all([cls.verify_transaction(tx, get_balance(), False) for tx in open_transactions])

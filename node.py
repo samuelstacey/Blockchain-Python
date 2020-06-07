@@ -8,7 +8,8 @@ class Node:
     def __init__(self):
         # self.wallet = str(uuid4())
         self.wallet = Wallet() #used for debugging before wallets are implemented
-        self.blockchain = None
+        self.wallet.create_keys()
+        self.blockchain = Blockchain(self.wallet.public_key) #check this - just for keys by default
 
 
     # gets user input
@@ -45,6 +46,7 @@ class Node:
             print('4: Check transaction validity')
             print('5: Create Wallet')
             print('6: Load Wallet')
+            print('7: Save Wallet')
             print('q: Quit')
 
             # variable to hold user input
@@ -54,7 +56,8 @@ class Node:
             if (selected_option == '1'):
                 tx_data = self.get_transaction_input()
                 recipient, amount = tx_data
-                if self.blockchain.add_transaction(recipient, self.wallet.public_key, amount=amount):
+                signature = self.wallet.sign_transaction(self.wallet.public_key, recipient, amount)
+                if self.blockchain.add_transaction(recipient, self.wallet.public_key, signature, amount=amount):
                     print('Transaction added')
                 else:
                     print('Transaction failed')
@@ -74,7 +77,10 @@ class Node:
                 self.wallet.create_keys()
                 self.blockchain = Blockchain(self.wallet.public_key) 
             elif (selected_option == '6'):
-                pass
+                self.wallet.load_keys()
+                self.blockchain = Blockchain(self.wallet.public_key) 
+            elif (selected_option == '7'):
+                self.wallet.save_keys()
             elif (selected_option == 'q'):
                 waiting_for_input = False
             else:
