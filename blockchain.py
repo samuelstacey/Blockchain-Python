@@ -102,6 +102,8 @@ class Blockchain:
             :receiver: The receiver of the coins
             :amount: The value of the transaction, default is 1
         """
+        if self.hosting_node == None:
+            return False
         #transaction stored as a object
         transaction = Transaction(sender, recipient, amount)
         #verify transaction can be made before adding to open_transactions
@@ -114,6 +116,8 @@ class Blockchain:
 
     # mine block and produce mining rewars as well as verifying transactions
     def mine_block(self):
+        if self.hosting_node == None:
+            return False
         last_block = self.__chain[-1]
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
