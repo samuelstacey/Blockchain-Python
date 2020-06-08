@@ -118,7 +118,7 @@ class Blockchain:
     # mine block and produce mining rewars as well as verifying transactions
     def mine_block(self):
         if self.hosting_node == None:
-            return False
+            return None
         last_block = self.__chain[-1]
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
@@ -128,7 +128,7 @@ class Blockchain:
         copied_transactions = self.__open_transactions[:] #verify all but the mining transaction
         for tx in copied_transactions:
             if not Wallet.verify_transaction(tx):
-                return False
+                return None
         copied_transactions.append(reward_transaction) #reward tx for the block
         block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
         
@@ -136,4 +136,4 @@ class Blockchain:
         self.__chain.append(block) #add block to the chain
         self.__open_transactions = [] #clear open transactions
         self.save_data() #save the new chain
-        return True
+        return block
