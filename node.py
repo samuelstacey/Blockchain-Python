@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request #jsonify just like json dumps really, request gets data sent with POST request
+from flask import Flask, jsonify, request, send_from_directory #jsonify just like json dumps really, request gets data sent with POST request
 from flask_cors import CORS
 
 from wallet import Wallet
@@ -8,6 +8,12 @@ app = Flask(__name__)
 wallet = Wallet() #no real public key yet
 blockchain = Blockchain(wallet.public_key)
 CORS(app) #To open to other clients not on the same node#
+
+
+#Tells flask if domain/ with get method return this 
+@app.route('/', methods=['GET']) #Just an endpoint for external http requests 
+def get_ui():
+    return send_from_directory('UI', 'node.html')
 
 
 @app.route('/wallet', methods = ['POST'])
@@ -45,13 +51,6 @@ def load_keys(): #THIS DOES NOT WORK
             'message' : 'Loading the keys failed', 
         }
         return jsonify(response), 500 #CHECK AGAIN
-
-
-
-#Tells flask if domain/ with get method return this 
-@app.route('/', methods=['GET']) #Just an endpoint for external http requests 
-def get_ui():
-    return 'Working correctly'
 
 
 @app.route('/transactions', methods=['GET'])
@@ -119,7 +118,7 @@ def add_transaction():
                 'amount': amount,
                 'signature': signature
             },
-            'funds': blockchain.get_balance()
+            'balance': blockchain.get_balance()
         }
         return jsonify(response), 201
     else:
@@ -138,7 +137,7 @@ def mine():
         response = { #Decides return message
             'message' : 'Block added successfully', 
             'block' : dict_block,
-            'funds' : blockchain.get_balance()
+            'balance' : blockchain.get_balance()
         }
         return jsonify(response), 201
     else:
