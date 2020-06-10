@@ -6,8 +6,6 @@ from blockchain import Blockchain
 
 
 app = Flask(__name__)
-wallet = Wallet() #no real public key yet
-blockchain = Blockchain(wallet.public_key)
 CORS(app) #To open to other clients not on the same node#
 
 
@@ -26,7 +24,7 @@ def create_keys():
     wallet.create_keys()
     if wallet.save_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)  #recreate blockchain with new keys
+        blockchain = Blockchain(wallet.public_key, port)  #recreate blockchain with new keys
         response = { #Decides return message
             'public_key' : wallet.public_key, 
             'private_key' : wallet.private_key,
@@ -44,7 +42,7 @@ def create_keys():
 def load_keys(): #THIS DOES NOT WORK
     if wallet.load_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)  #recreate blockchain with new keys
+        blockchain = Blockchain(wallet.public_key, port)  #recreate blockchain with new keys
         response = { #Decides return message
             'public_key' : wallet.public_key, 
             'private_key' : wallet.private_key,
@@ -199,4 +197,11 @@ def get_nodes():
 
 
 if __name__ == '__main__': #Only if directly started the file
-    app.run(host='0.0.0.0', port=5000)
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('-p', '--port', type=int, default = 5000)
+    args = parser.parse_args()
+    port = args.port
+    wallet = Wallet(port) #no real public key yet
+    blockchain = Blockchain(wallet.public_key, port)
+    app.run(host='0.0.0.0', port=port)
