@@ -116,8 +116,8 @@ class Blockchain:
             :receiver: The receiver of the coins
             :amount: The value of the transaction, default is 1
         """
-        if self.hosting_node == None:
-            return False
+        #if self.hosting_node == None:
+        #    return False
         #transaction stored as a object
         transaction = Transaction(sender, recipient, signature, amount)
         #verify transaction can be made before adding to open_transactions
@@ -176,11 +176,11 @@ class Blockchain:
     def add_block(self, block):
         transactions = [Transaction(tx['sender'], tx['recipient'], tx['signature'], tx['amount']) for tx in block['transactions']]
         proof_is_valid = Verification.valid_POW(transactions[:-1], block['previous_hash'], block['proof'])
-        hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
+        hashes_match = hash_block(self.__chain[-1]) == block['previous_hash']
         if not proof_is_valid or not hashes_match:
             return False
         converted_block = Block(block['index'], block['previous_hash'], transactions, block['proof'], block['timestamp'])
-        self.get_chain().append(converted_block)
+        self.__chain.append(converted_block)
         self.save_data()
         return True
 
