@@ -42,7 +42,7 @@
                     <form @submit.prevent="onAddNode">
                         <div class="form-group">
                             <label for="node-url">Node URL</label>
-                            <input v-model="newNodeUrl" type="text" class="form-control" id="node-url" placeholder="http://localhost:5001">
+                            <input v-model="newNodeUrl" type="text" class="form-control" id="node-url" placeholder="localhost:5001">
                         </div>
                         <button :disabled="newNodeUrl.trim() === ''" type="submit" class="btn btn-primary">Add</button>
                     </form>
@@ -80,17 +80,52 @@
                     'localhost:5001',
                     'localhost:5002',
                 ],
-                newNodeUrl: ''
+                newNodeUrl: '',
+                error = null,
+                success = null
             },
             methods: {
                 onAddNode: function() {
                     // Add node as peer node to local node server
+                    var vm = this;
+                    axios.post('/node', {node: this.newNodeUrl}) //VALIDATE THIS
+                        .then(function(response) {
+                            vm.success = 'Node added successfully.';
+                            vm.error = null;
+                            vm.nodes = response.data.all_nodes;
+                        })
+                        .catch(function(error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                        });
                 },
                 onLoadNodes: function() {
                     // Load all peer nodes of the local node server
+                    var vm = this;
+                    axios.get('/nodes')
+                        .then(function(response) {
+                            vm.success = 'Nodes fetched successfully.';
+                            vm.error = null;
+                            vm.nodes = response.data.all_nodes;
+                        })
+                        .catch(function(error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                        });
                 },
-                onRemoveNode: function() {
+                onRemoveNode: function(node_url) {
                     // Remove node as a peer node
+                    var vm = this;
+                    axios.delete('/node/' + node_url) 
+                        .then(function(response) {
+                            vm.success = 'Node removed successfully.';
+                            vm.error = null;
+                            vm.nodes = response.data.all_nodes;
+                        })
+                        .catch(function(error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                        });
                 }
             }
         })

@@ -13,8 +13,12 @@ CORS(app) #To open to other clients not on the same node#
 
 #Tells flask if domain/ with get method return this 
 @app.route('/', methods=['GET']) #Just an endpoint for external http requests 
-def get_ui():
+def get_node_ui():
     return send_from_directory('UI', 'node.html')
+
+@app.route('/network', methods=['GET']) 
+def get_network_ui():
+    return send_from_directory('UI', 'network.html')
 
 
 @app.route('/wallet', methods = ['POST'])
