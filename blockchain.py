@@ -20,6 +20,7 @@ class Blockchain:
         #loads data from file
         self.load_data()
         self.hosting_node = hosting_node_id
+        self.__peer_nodes = set()
 
     def get_chain(self):
         return self.__chain[:]
@@ -39,12 +40,14 @@ class Blockchain:
                         updated_block = Block(block['index'], block['previous_hash'], converted_tx, block['proof'], block['timestamp'])
                         updated_blockchain.append(updated_block)
                     self.__chain = updated_blockchain #set chain to dictionary above
-                    open_transactions = json.loads(file_content[1])
+                    open_transactions = json.loads(file_content[1][:-1])
                     updated_transactions = [] #load transactions similarly
                     for tx in open_transactions:
                         updated_transaction = Transaction(tx['sender'], tx['recipient'], tx['signature'], tx['amount'])
                         updated_transactions.append(updated_transaction)
                     self.__open_transactions = updated_transactions
+                    peer_nodes = json.loads(file_content[2])
+                    self.__peer_nodes = set(peer_nodes)
         except (FileNotFoundError, IndexError):
             print("File created")
                   
@@ -58,6 +61,8 @@ class Blockchain:
                     f.write('\n')
                     saveable_tx = [tx.__dict__ for tx in self.__open_transactions] #from ordereddict to dict for json serialise
                     f.write(json.dumps(saveable_tx)) #write open transations to file
+                    f.write('\n')
+                    f.write(json.dumps(list(self.__peer_nodes))) #stores peer nodes
         except IOError:
             print("Saving failed.") #if lack of permissions etc.
 
@@ -137,3 +142,17 @@ class Blockchain:
         self.__open_transactions = [] #clear open transactions
         self.save_data() #save the new chain
         return block
+
+    def add_peer_node(self, node):
+        #adds a new node to peer node set
+        self.__peer_nodes.add(node)
+        self.save_data()
+
+    def remove_peer_node(self, node):
+        #removes a node to peer node set if it exists
+        self.__peer_nodes.discard(node)
+        self.save_data()
+
+    def get_peer_nodes(self):
+        #returns a list of connected nodes
+        return list(self.__peer_nodes)[:]
