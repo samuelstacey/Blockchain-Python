@@ -5,6 +5,7 @@ from block import Block
 from transaction import Transaction
 from utility.verification import Verification #verification helper class
 from wallet import Wallet
+import requests #for http requests to share data between nodes
 
 # reward for mining a single block given to the miner
 MINING_REWARD = 10
@@ -117,6 +118,15 @@ class Blockchain:
         if Verification.verify_transaction(transaction, self.get_balance):
             self.__open_transactions.append(transaction)
             self.save_data()
+            for node in self.__peer_nodes:
+                url = 'http://{}/broadcast-transaction'.format(node)
+                try:
+                    response = requests.post(url, json={'sender': sender, 'recipient': recipient, 'amount': amount, 'signature':signature})
+                    if response.status_code == 400 or response.status_code == 500:
+                        print('Transaction declined, needs resolving')
+                        return False  
+                except requests.exceptions.ConnectionError:
+                    continue
             return True
         return False
         
