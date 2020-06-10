@@ -56,7 +56,7 @@ def load_keys(): #THIS DOES NOT WORK
         return jsonify(response), 500 #CHECK AGAIN
 
 
-@app.route('/broadcast-transaction')
+@app.route('/broadcast-transaction', methods=['POST'])
 def broadcast_transaction():
     values = request.get_json()
     if not values:
@@ -83,6 +83,30 @@ def broadcast_transaction():
             'message' : 'Creating a transaction failed'
         }
         return jsonify(response), 500
+
+
+@app.route('/broadcast-block', methods=['POST'])
+def broadcast_block():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'Required data not found'}
+        return jsonify(response), 400
+    if 'block' not in values:
+        response = {'message': 'Some required data not found'}
+        return jsonify(response), 400
+    block = values['block']
+    if block['index'] == blockchain.get_chain()[-1].index + 1:
+        if blockchain.add_block(block):
+            response = {'message': 'Block added'}
+            return jsonify(response), 201
+        else:
+            response = {'message': 'Block invalid'}
+            return jsonify(response), 500
+    elif block['index'] > blockchain.get_chain()[-1].index:
+        pass
+    else:
+        response = { 'message': 'Block not added, chain too short'}
+        return jsonify(response), 409
 
 @app.route('/transactions', methods=['GET'])
 def get_open_transactions():
