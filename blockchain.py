@@ -80,8 +80,14 @@ class Blockchain:
 
     # get the balance of a user based on transaction history
     #uses lambda expressions
-    def get_balance(self):
-        participant = self.hosting_node
+    def get_balance(self, sender=None):
+        if sender == None:
+            if self.hosting_node == None:
+                return None
+            participant = self.hosting_node
+        else: 
+            participant = sender
+
         tx_sender = [[tx.amount for tx in block.transactions
                     if tx.sender == participant] for block in self.__chain]
         open_tx_sender = [tx.amount
@@ -102,7 +108,7 @@ class Blockchain:
             return 0
 
     # function to add transaction to blockchain
-    def add_transaction(self, recipient, sender, signature, amount=1.0):
+    def add_transaction(self, recipient, sender, signature, amount=1.0, is_receiving=False):
         """ Add a transaction to a blockchain
         Return: whether transaction was successful
         Arguments:
@@ -118,15 +124,16 @@ class Blockchain:
         if Verification.verify_transaction(transaction, self.get_balance):
             self.__open_transactions.append(transaction)
             self.save_data()
-            for node in self.__peer_nodes:
-                url = 'http://{}/broadcast-transaction'.format(node)
-                try:
-                    response = requests.post(url, json={'sender': sender, 'recipient': recipient, 'amount': amount, 'signature':signature})
-                    if response.status_code == 400 or response.status_code == 500:
-                        print('Transaction declined, needs resolving')
-                        return False  
-                except requests.exceptions.ConnectionError:
-                    continue
+            if not is_receiving: #only broadcast to peer node if on the first node doing the transaction.
+                for node in self.__peer_nodes:
+                    url = 'http://{}/broadcast-transaction'.format(node)
+                    try:
+                        response = requests.post(url, json={'sender': sender, 'recipient': recipient, 'amount': amount, 'signature':signature})
+                        if response.status_code == 400 or response.status_code == 500:
+                            print('Transaction declined, needs resolving')
+                            return False  
+                    except requests.exceptions.ConnectionError:
+                        continue
             return True
         return False
         
