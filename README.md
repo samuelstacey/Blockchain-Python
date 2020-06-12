@@ -23,4 +23,6 @@ Dependencies: I suggest you use ANACONDA to install
 
 -PyCrypto
 
+-Requests
+
 Run the node.py file to start blockchain and access interface with localhos:5000 in the browser. -p can be used to specify a port.

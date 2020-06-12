@@ -101,9 +101,11 @@ def broadcast_block():
             return jsonify(response), 201
         else:
             response = {'message': 'Block invalid'}
-            return jsonify(response), 500
+            return jsonify(response), 409
     elif block['index'] > blockchain.get_chain()[-1].index:
-        pass
+        response = { 'message': 'Blockchain differs from local chain'}
+        blcokchain.resolve_conlicts = True
+        return jsonify(response), 200
     else:
         response = { 'message': 'Block not added, chain too short'}
         return jsonify(response), 409
@@ -185,6 +187,9 @@ def add_transaction():
 
 @app.route('/mine', methods=['POST'])
 def mine():
+    if blockchain.resolve_conflicts:
+        response = {'message': 'Resolve conflicts first, block not added.'}
+        return jsonify(response), 409
     block = blockchain.mine_block()
     if block != None:
         dict_block = block.__dict__.copy()
@@ -201,6 +206,16 @@ def mine():
             'wallet_set_up' : wallet.public_key != None
         }
         return jsonify(response), 500 #CHECK THIS ERROR CODE, NOT SURE
+
+
+@app.route('/resolve-conflicts', methods=['POST'])
+def resolve_conflicts():
+    replaced = blockchain.resolve()
+    if replaced:
+        response = {'message': 'Chain replaced'}
+    else:
+        response = {'message': 'Chain kept'}
+    return jsonify(response), 200
 
 
 @app.route('/node', methods=['POST'])
